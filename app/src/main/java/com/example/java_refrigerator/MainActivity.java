@@ -2,6 +2,8 @@ package com.example.java_refrigerator;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,8 +58,19 @@ public class MainActivity extends Activity {
 
     }
 
-    private class DBHelper {
-        public DBHelper(MainActivity mainActivity, String dbName, Object o, int dbVersion) {
+    //manage DB
+    public class DBHelper extends SQLiteOpenHelper {
+        public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE freezer (_foodName TEXT, _limitDate TEXT, _updown TEXT, mpath TEXT primary key, memo TEXT);");
+        }
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS freezer");
+            onCreate(db);
         }
     }
 
