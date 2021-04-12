@@ -23,12 +23,12 @@ public class MainActivity extends Activity {
 
     private DBHelper dbHelper;
 
-    private ArrayList<FoodDB> Food;      //freezefood == Food
+    private ArrayList<FoodDB> Food;
     private MyListAdapter MyAdapter;
 
     private Button add, all, up, down, paste;
     private TextView comment;
-    private ListView myFoodList;    //foodList == myFoodList
+    private ListView myFoodList;
 
     //field의 상태를 알아보기 위해
     private boolean isLong = false;
@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
         dbHelper = new DBHelper(this, dbName, null, dbVersion);
         Food = new ArrayList<FoodDB>();
 
-        //
         paste = (Button) findViewById(R.id.paste);
         comment = (TextView)findViewById(R.id.comment);
         myFoodList = (ListView) findViewById(R.id.foodList);

@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:id="@+id/Picture"
+        android:layout_width="250dp"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:paddingTop="25dp"
+        android:paddingLeft="25dp"
+        android:id="@+id/memo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="10dp" />
+
+<!--textView 꾸밀 배경 이미지 넣기-->
+
+</LinearLayout>
