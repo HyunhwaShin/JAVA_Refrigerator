@@ -246,9 +246,164 @@ public class MainActivity extends Activity {
             return view;
         }
     }
+    //all data in db
     private void search_all_db() {
+        SQLiteDatabase db;
+
+        Food.clear();
+        db= dbHelper.getReadableDatabase();
+
+        deaded_food=0;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM Refrigerator", null);
+
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                FoodDB foodDB = new FoodDB(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+
+                //insert
+                Food.add(foodDB);
+
+                //exceeded food check
+                boolean state = over_limit_date(cursor.getString(1));
+                if(state){
+                    deaded_food++;
+                }
+            }
+        }
+        //버튼 위에 유통기한 지난 음식의 수 표시
+        paste.setText(deaded_food+ "/" + Food.size());
+
+        deaded_food =0;
+
+        cursor.close();
+        dbHelper.close();
     }
+
     private void delete_food_db(String path) {
+        SQLiteDatabase db;
+        db = dbHelper.getWritableDatabase();     //db를 open
+
+        db.execSQL("DELETE FROM Refrigerator WHERE mpath='"+ path +"';");
+    }
+
+    private void search_paste_db(){
+        SQLiteDatabase db;
+
+        Food.clear();
+        db= dbHelper.getReadableDatabase();
+
+        deaded_food=0;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM Refrigerator", null);
+
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                FoodDB foodDB = new FoodDB(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+
+                //insert
+                Food.add(foodDB);
+
+                //exceeded food check
+                boolean state = over_limit_date(cursor.getString(1));
+                if(state){
+                    deaded_food++;
+                }
+            }
+        }
+        cursor.close();
+        dbHelper.close();
+    }
+    private void search_up_db(){
+        SQLiteDatabase db;
+
+        Food.clear();
+        db= dbHelper.getReadableDatabase();
+
+        deaded_food=0;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM Refrigerator WHERE up_down = '냉동'", null);
+
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                FoodDB foodDB = new FoodDB(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+
+                Food.add(foodDB);
+
+                boolean state = over_limit_date(cursor.getString(1));
+                if(state){
+                    deaded_food++;
+                }
+            }
+        }
+        paste.setText(deaded_food+ "/" + Food.size());
+
+        deaded_food =0;
+
+        cursor.close();
+        dbHelper.close();
+
+    }
+
+    private void search_down_db(){
+        SQLiteDatabase db;
+
+        Food.clear();
+        db= dbHelper.getReadableDatabase();
+
+        deaded_food=0;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM Refrigerator WHERE up_down = '냉장'", null);
+
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                FoodDB foodDB = new FoodDB(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+
+                Food.add(foodDB);
+
+                boolean state = over_limit_date(cursor.getString(1));
+                if(state){
+                    deaded_food++;
+                }
+            }
+        }
+        paste.setText(deaded_food+ "/" + Food.size());
+
+        deaded_food =0;
+
+        cursor.close();
+        dbHelper.close();
+
+    }
+
+    //오늘의 날짜로 유통기한 지났는지 확인
+    private boolean over_limit_date(String f_date) {
+        try {
+            // date format
+            SimpleDateFormat d_format = new SimpleDateFormat("yyyy/MM/dd");
+
+            // today date, time
+            Calendar cal = Calendar.getInstance();
+
+            String today = d_format.format(cal.getTime());
+
+            // 비교하기위해 같이 포맷
+            Date date1 = d_format.parse(f_date);			// database exceeded date
+            Date date2 = d_format.parse(today);				// today date
+
+            Log.e("date1", date1 + "");
+            Log.e("date2", date2 + "");
+
+            if (date1.before(date2) || date1.equals(date2)) {
+                // true 이면 유통기한을 지났다는 뜻
+                return true;
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //false 이면 유통기한을 안지났다는 뜻
+        return false;
     }
 
 }
