@@ -1,18 +1,45 @@
 package com.example.java_refrigerator;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -45,7 +72,7 @@ public class MainActivity extends Activity {
         Food = new ArrayList<FoodDB>();
 
         paste = (Button) findViewById(R.id.paste);
-        comment = (TextView)findViewById(R.id.comment);
+        comment = (TextView) findViewById(R.id.comment);
         myFoodList = (ListView) findViewById(R.id.foodList);
         add = (Button) findViewById(R.id.add);
         all = (Button) findViewById(R.id.all);
@@ -55,8 +82,93 @@ public class MainActivity extends Activity {
         MyAdapter = new MyListAdapter(this, R.layout.icontext_activity, Food);
         myFoodList.setAdapter(MyAdapter);
 
+        search_all_db();
+
+        myFoodList.setOnItemClickListener(new OnItemClickListener() {
+
+            //short click
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final LinearLayout linear = (LinearLayout)View.inflate(MainActivity.this, R.layout.info_activity, null);
+
+                if(isLong == false){
+                    String path = Food.get(position).mPath;
+
+                    ImageView pic = (ImageView) linear.findViewById(R.id.Picture);
+                    TextView memo = (TextView) linear.findViewById(R.id.memo);
+
+                    InputStream in = null;       //입력을 받아오기 위해서
+                    File file = new File(getExternalCacheDir(),path);
+
+                    //Image 받아올 때 오류처리
+                    try{
+                        in = new FileInputStream(file);
+
+                        Bitmap bitmap = BitmapFactory.decodeStream(in);
+                        pic.setImageBitmap(bitmap);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try{
+                        in.close();
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+                    memo.setText(Food.get(position).memo);
+                }
+
+                //Dialog 로 Img, memo 보여주기
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("음식정보 ("+ Food.get(position).UpDown + ")").setView(linear)
+                        .setPositiveButton("확인", null).show();
+            }
+        });
+
+        //long click
+        myFoodList.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String f_name = Food.get(position).foodName;
+
+                isLong = true;
+
+                //button 누르면 delete
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("삭제").setMessage(f_name + "삭제하시겠습니까?")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                String path = Food.get(position).mPath;
+                                delete_food_db(path);
+                                Food.remove(position);
+
+                                MyAdapter.notifyDataSetChanged();
+                                search_all_db();
+                                isLong = false;
+                            }
+                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        isLong = false;
+                    }
+                }).show();
+
+                return false;
+            }
+        });
+
+
+
+
+
+
+
+
 
     }
+
+
 
     //manage DB
     public class DBHelper extends SQLiteOpenHelper {
@@ -134,4 +246,9 @@ public class MainActivity extends Activity {
             return view;
         }
     }
+    private void search_all_db() {
+    }
+    private void delete_food_db(String path) {
+    }
+
 }
