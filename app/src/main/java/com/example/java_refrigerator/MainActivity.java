@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main_activity);
 
         dbHelper = new DBHelper(this, dbName, null, dbVersion);
@@ -73,7 +74,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    //manage about ListView //구성을 잘 모르겠다 푸하하하항
+
+    //manage about ListView
     class MyListAdapter extends BaseAdapter {
 
         Context maincon;
@@ -116,6 +118,7 @@ public class MainActivity extends Activity {
                 view = Inflater.inflate(layout, parent,false);
             }
             ImageView img = (ImageView)view.findViewById(R.id.img);
+
             if(myFoodList.get(position).UpDown.equals("냉동")){
                 img.setImageResource(R.drawable.ice);
             }else{
