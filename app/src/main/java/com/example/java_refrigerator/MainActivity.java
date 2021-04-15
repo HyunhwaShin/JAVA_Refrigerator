@@ -391,9 +391,6 @@ public class MainActivity extends Activity {
             Date date1 = d_format.parse(f_date);			// database exceeded date
             Date date2 = d_format.parse(today);				// today date
 
-            Log.e("date1", date1 + "");
-            Log.e("date2", date2 + "");
-
             if (date1.before(date2) || date1.equals(date2)) {
                 // true 이면 유통기한을 지났다는 뜻
                 return true;
