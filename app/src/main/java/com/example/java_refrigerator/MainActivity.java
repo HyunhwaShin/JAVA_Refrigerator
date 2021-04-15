@@ -171,17 +171,17 @@ public class MainActivity extends Activity {
 
 
     //manage DB
-    public class DBHelper extends SQLiteOpenHelper {
+    public static class DBHelper extends SQLiteOpenHelper {
         public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
         }
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE freezer (_foodName TEXT, _limitDate TEXT, _updown TEXT, mpath TEXT primary key, memo TEXT);");
+            db.execSQL("CREATE TABLE Refrigerator(_foodName TEXT, _limitDate TEXT, _updown TEXT, mpath TEXT primary key, memo TEXT);");
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS freezer");
+            db.execSQL("DROP TABLE IF EXISTS Refrigerator");
             onCreate(db);
         }
     }
