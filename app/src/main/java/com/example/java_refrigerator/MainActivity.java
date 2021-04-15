@@ -158,17 +158,45 @@ public class MainActivity extends Activity {
             }
         });
 
+        SharedPreferences pref = getSharedPreferences("Enroll", 0);
+        int setting = pref.getInt("setting", 0);
 
-
-
-
-
-
-
-
+        if (setting == 0)
+            setAlarm();
     }
+    private void setAlarm(){
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
+        Calendar compareDate = Calendar.getInstance();
+        //9시
+        compareDate.add(Calendar.DATE, 1);
+        compareDate.set(Calendar.HOUR_OF_DAY, 9);
+        compareDate.set(Calendar.MINUTE, 0);
+        compareDate.set(Calendar.SECOND, 0);
+        compareDate.set(Calendar.MILLISECOND, 0);
 
+        //Alarm regist
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, compareDate.getTimeInMillis(), 24 * 3600 * 1000, pIntent); //24시
+
+        SharedPreferences pref = getSharedPreferences("Enroll", 0);
+        SharedPreferences.Editor edit = pref.edit();
+        edit.putInt("setting", 1);
+
+        edit.commit();
+
+        Toast.makeText(getApplicationContext(),"알람 설정 완료",Toast.LENGTH_LONG).show();
+    }
+    private void releaseAlarm() {
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        alarmManager.cancel(pIntent);
+
+        Toast.makeText(getApplicationContext(), "알람 해제 완료", Toast.LENGTH_LONG).show();
+    }
 
     //manage DB
     public static class DBHelper extends SQLiteOpenHelper {
