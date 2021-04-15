@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -16,7 +18,13 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import static java.lang.String.format;
 
@@ -37,6 +45,8 @@ public class AddActivity extends Activity {
     private String saveIMG ="";
 
     private String showDate,deadDate;
+
+    private static final int CALL_CAMERA = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -121,6 +131,47 @@ public class AddActivity extends Activity {
         };
     };
 
+    //Camera
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {//make picture
+
+            if (requestCode == CALL_CAMERA) {
+
+                Bitmap bm = BitmapFactory.decodeFile(mPath);
+
+                Bitmap saveImg = Bitmap.createScaledBitmap(bm, 250, 200, false);
+
+                OutputStream out = null;
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd/hh:mm:ss");
+                String date = dateFormat.format(new Date());
+                saveIMG = date + ".png";
+
+                File file = new File(getExternalCacheDir(), saveIMG);
+                try {
+                    // write image file
+                    out = new FileOutputStream(file);
+
+                    saveImg.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+                    // draw image View
+                    img.setImageBitmap(saveImg);
+
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(getApplicationContext(), "사진 찍기 실패", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+                try {
+                    out.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public class DBHelper extends SQLiteOpenHelper {
 
